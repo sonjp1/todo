@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo List</title>
+    <link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/todo.css}" rel="stylesheet">
+
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script th:src="@{/js/todo.js}" type="text/javascript" ></script>
+</head>
+<body>
+    <div style="width:1000px;">
+        <div>
+            <select id="todo_type">
+                <option value="">선택</option>
+                <option value="no" th:selected="${#strings.equals(todoType, 'no')}">No</option>
+                <option value="ref" th:selected="${#strings.equals(todoType, 'ref')}">참조 No</option>
+                <option value="fin" th:selected="${#strings.equals(todoType, 'fin')}">완료여부</option>
+                <option value="content" th:selected="${#strings.equals(todoType, 'content')}">내용</option>
+                <option value="last" th:selected="${#strings.equals(todoType, 'last')}">최종수정일자</option>
+                <option value="reg" th:selected="${#strings.equals(todoType, 'reg')}">등록일자</option>
+            </select>
+            <input type="text" id="todo_item" name="todo_item" th:value="${todoItem}" placeholder="Todo Item">
+            <button type="button" id="todo_search">Search Todo</button>
+        </div>
+        <div style="margin-top:10px;">
+            <form id="frm_todo" method="post">
+                <input type="text" id="add_content" placeholder="내용">
+                <input type="text" id="add_ref" placeholder="참조 No">
+                <button type="button" id="btn_add">Add Todo</button>
+            </form>
+        </div>
+        <div>
+            <table id="tbl_todo" class="hover" data-mode="default">
+                <colgroup>
+                    <col width="1%">
+                    <col width="*">
+                    <col width="10%">
+                    <col width="20%">
+                    <col width="20%">
+                    <col width="15%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>내용</th>
+                        <th>참조 No</th>
+                        <th>최종수정일자</th>
+                        <th>등록일자</th>
+                        <th>수정 / 삭제</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <th:block th:if="${not #lists.isEmpty(todoList)}" th:each="data:${todoList}">
+                        <th:block>
+                            <tr th:if="${#strings.equals(data.isFinish, 'Y')}" class="strikeout">
+                                <td>
+                                    <label th:for="|chk_${data.no}|">
+                                        <input type="checkbox" th:id="|chk_${data.no}|" th:onclick="|fnChgStatus(${data.no})|" checked>
+                                    </label>
+                                </td>
+                                <td th:text="${data.content}" th:data-content="${data.content}"></td>
+                                <td th:text="${data.ref}" th:data-ref="${data.ref}"></td>
+                                <td th:text="${#temporals.format(data.lastUpdDate, 'yyyy-MM-dd')}"></td>
+                                <td th:text="${#temporals.format(data.regDate, 'yyyy-MM-dd')}"></td>
+                                <td>
+                                    <a href="javascript:void(0);" class="btn_edit" th:data-no="${data.no}"><i class="far fa-edit"></i></a> /
+                                    <a href="javascript:void(0);" th:onclick="|fnDelete(${data.no})|"><i class="far fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                            <tr th:unless="${#strings.equals(data.isFinish, 'Y')}">
+                                <td>
+                                    <label th:for="|chk_${data.no}|">
+                                        <input type="checkbox" th:id="|chk_${data.no}|" th:onclick="|fnChgStatus(${data.no})|">
+                                    </label>
+                                </td>
+                                <td th:text="${data.content}" th:data-content="${data.content}"></td>
+                                <td th:text="${data.ref}" th:data-ref="${data.ref}"></td>
+                                <td th:text="${#temporals.format(data.lastUpdDate, 'yyyy-MM-dd')}"></td>
+                                <td th:text="${#temporals.format(data.regDate, 'yyyy-MM-dd')}"></td>
+                                <td>
+                                    <a href="javascript:void(0);" class="btn_edit" th:data-no="${data.no}"><i class="far fa-edit"></i></a> /
+                                    <a href="javascript:void(0);" th:onclick="|fnDelete(${data.no})|"><i class="far fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </th:block>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
